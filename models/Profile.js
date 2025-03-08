@@ -15,6 +15,10 @@ const User_Schema = new Mongoose.Schema({
     }, 
     photoURL : {
         type: String
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 
