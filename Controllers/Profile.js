@@ -18,14 +18,4 @@ const User_details = async (req, res) => {
     }
 };
 
-const Users = async(req, res) => {
-    try {
-        const users = await users.find();
-        res.status(200).json(users);
-    }
-    catch(err) {
-        console.error(err);
-    }
-}
-
-module.exports = {User_details, Users};
+module.exports = User_details;
