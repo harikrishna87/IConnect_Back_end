@@ -1,4 +1,5 @@
 const Meetings = require("../models/Meetings.js");
+const { v4: uuidv4 } = require('uuid');
 
 const User_Meetings = async (req, res) => {
     try {
@@ -23,7 +24,6 @@ const User_Meetings = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 const Meetings_links = async (req, res) => {
     try {
@@ -57,4 +57,60 @@ const Delete_links = async (req, res) => {
     }
 };
 
-module.exports = { User_Meetings, Meetings_links, Delete_links };
+const Schedule_Meeting = async (req, res) => {
+    try {
+        const { 
+            userID, 
+            title, 
+            scheduledTime, 
+            duration, 
+            description = "", 
+            participants = [] 
+        } = req.body;
+        
+        console.log("Received scheduling request:", req.body); 
+        if (!userID || !title || !scheduledTime || !duration) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Missing required fields' 
+            });
+        }
+        
+        const roomID = uuidv4();
+        const baseUrl = process.env.CLIENT_BASE_URL || 'https://i-connect-video-calling-app.vercel.app/';
+        const meetingLink = `${baseUrl}/group_call?roomID=${roomID}`;
+        const newMeeting = await Meetings.create({
+            roomID,
+            userID,
+            title,
+            meetingLink,
+            scheduledTime: new Date(scheduledTime),
+            duration,
+            description,
+            participants,
+            createdAt: new Date(),
+            isScheduled: true,
+            isActive: true
+        });
+        
+        console.log("Meeting scheduled successfully:", newMeeting);
+        
+        res.status(200).json({
+            success: true,
+            meeting: newMeeting
+        });
+    } catch (err) {
+        console.error("Error scheduling meeting:", err);
+        res.status(500).json({
+            success: false,
+            message: "Failed to schedule meeting: " + err.message
+        });
+    }
+};
+
+module.exports = { 
+    User_Meetings, 
+    Meetings_links, 
+    Delete_links,
+    Schedule_Meeting
+};

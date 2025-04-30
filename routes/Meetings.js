@@ -1,10 +1,15 @@
-const express = require("express");
-const meeting_router = express.Router()
-const {User_Meetings, Meetings_links, Delete_links} = require("../Controllers/Meetings.js")
+const express = require('express');
+const router = express.Router();
+const { 
+    User_Meetings, 
+    Meetings_links, 
+    Delete_links,
+    Schedule_Meeting 
+} = require('../Controllers/Meetings.js');
 
+router.post('/meetings/create', User_Meetings);
+router.get('/meetings/links', Meetings_links);
+router.post('/meetings/delete', Delete_links);
+router.post('/meetings/schedule', Schedule_Meeting);
 
-meeting_router.post("/meetings", User_Meetings);
-meeting_router.get("/meetings/links", Meetings_links);
-meeting_router.post("/meetings/delete", Delete_links)
-
-module.exports = meeting_router;
+module.exports = router;
